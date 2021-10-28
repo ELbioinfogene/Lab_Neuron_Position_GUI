@@ -1,5 +1,5 @@
 # Lab_Neuron_Position_GUI
-A user interface for the selection of neurons in wellplate microscope images. Selected areas are used by separate code to measure fluorescence
+A user interface for the selection of neurons in well plate microscope images. Selected areas are used by separate code to measure fluorescence
 
 Example of GUI in use:
 ![04 Cycle 1 Selections](https://user-images.githubusercontent.com/87732400/139340213-a0cfd65c-2c59-4d87-8e28-ee610e1bdd76.png)
