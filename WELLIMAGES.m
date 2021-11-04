@@ -228,15 +228,33 @@ classdef WELLIMAGES
                 INT_Y = round(Y);
                 %Get Number of existing positions
                 [~,POS_COUNT] = size(obj.ANIMAL_POSITION_SUPER.ANIMALS(ANIMAL_UPDATE).POSITION);
-                %Add Additional Position data
-                %10/18 TO DO - this is 'DUMB' - test for existing Pos first!
-                obj.ANIMAL_POSITION_SUPER.ANIMALS(ANIMAL_UPDATE).POSITION(POS_COUNT+1).WELL = obj.wellID;
-                obj.ANIMAL_POSITION_SUPER.ANIMALS(ANIMAL_UPDATE).POSITION(POS_COUNT+1).X_POS = INT_X;
-                obj.ANIMAL_POSITION_SUPER.ANIMALS(ANIMAL_UPDATE).POSITION(POS_COUNT+1).Y_POS = INT_Y;
-                obj.ANIMAL_POSITION_SUPER.ANIMALS(ANIMAL_UPDATE).POSITION(POS_COUNT+1).ANIMAL_ID = ANIMAL_UPDATE;
-                obj.ANIMAL_POSITION_SUPER.ANIMALS(ANIMAL_UPDATE).POSITION(POS_COUNT+1).CYCLE = obj.present_cycle;
-                obj.ANIMAL_POSITION_SUPER.ANIMALS(ANIMAL_UPDATE).POSITION(POS_COUNT+1).TRIAL = obj.present_trial;
-                obj.ANIMAL_POSITION_SUPER.ANIMALS(ANIMAL_UPDATE).POSITION(POS_COUNT+1).FRAME = obj.present_frame;
+                %Does a position already exist for this cycle?
+                overwrite_position = 0;
+                for P=1:1:POS_COUNT
+                    RECORDED_CYCLE = obj.ANIMAL_POSITION_SUPER.ANIMALS(ANIMAL_UPDATE).POSITION(P).CYCLE;
+                    if RECORDED_CYCLE==obj.present_cycle
+                        overwrite_position = P;
+                    end
+                end
+                %Add Additional Position data if no record for this cycle
+                if overwrite_position==0
+                    obj.ANIMAL_POSITION_SUPER.ANIMALS(ANIMAL_UPDATE).POSITION(POS_COUNT+1).WELL = obj.wellID;
+                    obj.ANIMAL_POSITION_SUPER.ANIMALS(ANIMAL_UPDATE).POSITION(POS_COUNT+1).X_POS = INT_X;
+                    obj.ANIMAL_POSITION_SUPER.ANIMALS(ANIMAL_UPDATE).POSITION(POS_COUNT+1).Y_POS = INT_Y;
+                    obj.ANIMAL_POSITION_SUPER.ANIMALS(ANIMAL_UPDATE).POSITION(POS_COUNT+1).ANIMAL_ID = ANIMAL_UPDATE;
+                    obj.ANIMAL_POSITION_SUPER.ANIMALS(ANIMAL_UPDATE).POSITION(POS_COUNT+1).CYCLE = obj.present_cycle;
+                    obj.ANIMAL_POSITION_SUPER.ANIMALS(ANIMAL_UPDATE).POSITION(POS_COUNT+1).TRIAL = obj.present_trial;
+                    obj.ANIMAL_POSITION_SUPER.ANIMALS(ANIMAL_UPDATE).POSITION(POS_COUNT+1).FRAME = obj.present_frame;
+                else
+                %overwrite position for this cycle if it already exists
+                    obj.ANIMAL_POSITION_SUPER.ANIMALS(ANIMAL_UPDATE).POSITION(overwrite_position).WELL = obj.wellID;
+                    obj.ANIMAL_POSITION_SUPER.ANIMALS(ANIMAL_UPDATE).POSITION(overwrite_position).X_POS = INT_X;
+                    obj.ANIMAL_POSITION_SUPER.ANIMALS(ANIMAL_UPDATE).POSITION(overwrite_position).Y_POS = INT_Y;
+                    obj.ANIMAL_POSITION_SUPER.ANIMALS(ANIMAL_UPDATE).POSITION(overwrite_position).ANIMAL_ID = ANIMAL_UPDATE;
+                    obj.ANIMAL_POSITION_SUPER.ANIMALS(ANIMAL_UPDATE).POSITION(overwrite_position).CYCLE = obj.present_cycle;
+                    obj.ANIMAL_POSITION_SUPER.ANIMALS(ANIMAL_UPDATE).POSITION(overwrite_position).TRIAL = obj.present_trial;
+                    obj.ANIMAL_POSITION_SUPER.ANIMALS(ANIMAL_UPDATE).POSITION(overwrite_position).FRAME = obj.present_frame;
+                end
                 %return updated ANIMAL_ARRAY and img frame
                 ANIMAL_ARRAY = obj.POSITION_DISPLAY;
                 [obj,NEW_FRAME]=obj.frame_grabber(obj.present_cycle,obj.present_trial,obj.present_frame,obj.present_type);
@@ -248,6 +266,7 @@ classdef WELLIMAGES
         end
         %End of UPDATE_ANIMAL()
         %TO DO 10/20/21 - needs check to avoid redundant Positions
+        %11/4 - only allows one position per cycle
         
         %Removes all entries for a particular animal and updates all
         %remaining animal ID#s
